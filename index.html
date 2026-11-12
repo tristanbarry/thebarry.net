@@ -23,6 +23,48 @@
 	</div>
 </div>
 
+<script>
+	const MIN_CLOUD_DURATION_SECONDS = 48;
+	const MAX_CLOUD_DURATION_SECONDS = 184;
+	const MIN_CLOUD_OPACITY = 0.55;
+	const MAX_CLOUD_OPACITY = 0.9;
+	const MIN_CLOUD_SIZE_PX = 42;
+	const MAX_CLOUD_SIZE_PX = 100;
+	const MAX_CLOUD_HEIGHT_RATIO = 0.42;
+	const randomBetween = (min, max) => Math.random() * (max - min) + min;
+	const mainImage = document.querySelector('#mid > img');
+	const clouds = document.querySelectorAll('.face');
+
+	clouds.forEach((cloud) => {
+		const duration = randomBetween(MIN_CLOUD_DURATION_SECONDS, MAX_CLOUD_DURATION_SECONDS);
+		cloud.style.setProperty('--cloud-duration', `${duration.toFixed(1)}s`);
+		cloud.style.setProperty('--cloud-opacity', randomBetween(MIN_CLOUD_OPACITY, MAX_CLOUD_OPACITY).toFixed(2));
+		cloud.style.setProperty('--cloud-delay', `${-randomBetween(0, duration).toFixed(1)}s`);
+	});
+
+	const resizeClouds = () => {
+		const maximumSizePx = Math.min(MAX_CLOUD_SIZE_PX, mainImage.clientHeight * MAX_CLOUD_HEIGHT_RATIO);
+		const minimumSizePx = Math.min(MIN_CLOUD_SIZE_PX, maximumSizePx);
+
+		clouds.forEach((cloud) => {
+			cloud.style.setProperty('--cloud-size', `${Math.round(randomBetween(minimumSizePx, maximumSizePx))}px`);
+		});
+		positionClouds();
+	};
+
+	const positionClouds = () => {
+		clouds.forEach((cloud) => {
+			const maximumTopPx = Math.max(0, mainImage.clientHeight - cloud.clientHeight);
+			cloud.style.setProperty('--cloud-top', `${Math.round(randomBetween(0, maximumTopPx))}px`);
+		});
+	};
+
+	clouds.forEach((cloud) => cloud.addEventListener('load', positionClouds));
+	mainImage.addEventListener('load', resizeClouds);
+	window.addEventListener('resize', resizeClouds);
+	if (mainImage.complete) resizeClouds();
+</script>
+
 </body>
 
 </html>
